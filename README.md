@@ -43,13 +43,25 @@ python generate.py
 
 You'll be prompted to select:
 1. **Provider** — only providers with configured API keys are shown
-2. **Ethnicities** — East Asian, South Asian, Black, Hispanic, White, Middle Eastern, etc.
-3. **Age groups** — Elementary, Middle School, High School, College
-4. **Poses** — sitting at desk, standing with backpack, reading, presenting, etc.
-5. **Props** — backpack, laptop, books, art supplies, lab coat, etc.
-6. **Images per combination** — how many variants of each combination to generate
+2. **Image size** — resolution options vary by provider (e.g. square, portrait, landscape)
+3. **Ethnicities** — East Asian, South Asian, Black, Hispanic, White, Middle Eastern, etc.
+4. **Age groups** — Elementary, Middle School, High School, College
+5. **Poses** — sitting at desk, standing with backpack, reading, presenting, etc.
+6. **Props** — backpack, laptop, books, art supplies, lab coat, etc.
+7. **Images per combination** — how many variants of each combination to generate
 
 A cost estimate is shown before generation begins.
+
+### Preview mode
+
+By default, the tool asks if you'd like to run in **preview mode** — this generates 1 sample image per combination so you can check the results before committing to a full batch.
+
+After previews generate, you can:
+- **Approve** — proceed with the full batch using the current prompt
+- **Adjust prompt** — add instructions like "zoom out more" or "show full body" that get appended to every prompt, then regenerate previews
+- **Cancel** — stop without running the full batch
+
+Preview images are saved to `output/_preview/` and overwrite on each iteration. Use `--no-preview` to skip this step.
 
 ### Save and reuse configs
 
@@ -59,6 +71,9 @@ python generate.py --save-config my-run.json
 
 # Re-run with saved config (no prompts)
 python generate.py --config my-run.json
+
+# Skip preview mode, generate full batch immediately
+python generate.py --no-preview
 
 # Custom output directory
 python generate.py --output ./photos

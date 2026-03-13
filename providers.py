@@ -1,5 +1,5 @@
 """
-Image generation providers — async implementations for OpenAI, fal.ai, Stability AI.
+Image generation providers — async implementations for Gemini, OpenAI, fal.ai, Stability AI.
 """
 
 import asyncio
@@ -9,20 +9,59 @@ import sys
 import httpx
 
 PROVIDERS = {
+    "Google Nano Banana 2": {
+        "env_var": "GEMINI_API_KEY",
+        "cost_per_image": 0.067,
+        "max_concurrent": 5,
+        "sizes": {
+            "Square (1:1)": "1:1",
+            "Portrait (2:3)": "2:3",
+            "Portrait (3:4)": "3:4",
+            "Portrait (9:16)": "9:16",
+            "Landscape (3:2)": "3:2",
+            "Landscape (4:3)": "4:3",
+            "Landscape (16:9)": "16:9",
+        },
+        "default_size": "Square (1:1)",
+    },
     "OpenAI GPT Image": {
         "env_var": "OPENAI_API_KEY",
         "cost_per_image": 0.009,
         "max_concurrent": 3,
+        "sizes": {
+            "Square (1024x1024)": "1024x1024",
+            "Portrait (1024x1536)": "1024x1536",
+            "Landscape (1536x1024)": "1536x1024",
+            "Auto": "auto",
+        },
+        "default_size": "Square (1024x1024)",
     },
     "fal.ai Flux 2 Pro": {
         "env_var": "FAL_KEY",
         "cost_per_image": 0.03,
         "max_concurrent": 2,
+        "sizes": {
+            "Square HD (1024x1024)": "square_hd",
+            "Square (512x512)": "square",
+            "Portrait 3:4 (768x1024)": "portrait_3_4",
+            "Portrait 9:16 (576x1024)": "portrait_9_16",
+            "Landscape 4:3 (1024x768)": "landscape_4_3",
+            "Landscape 16:9 (1024x576)": "landscape_16_9",
+        },
+        "default_size": "Square HD (1024x1024)",
     },
     "Stability AI SD 3.5": {
         "env_var": "STABILITY_API_KEY",
         "cost_per_image": 0.04,
         "max_concurrent": 10,
+        "sizes": {
+            "Square (1:1)": "1:1",
+            "Portrait (2:3)": "2:3",
+            "Portrait (9:16)": "9:16",
+            "Landscape (3:2)": "3:2",
+            "Landscape (16:9)": "16:9",
+        },
+        "default_size": "Square (1:1)",
     },
 }
 
@@ -47,7 +86,44 @@ async def _request(client, method, url, max_retries=3, **kwargs):
 # ── Provider implementations ─────────────────────────────────────────────────
 
 
-async def _generate_openai(client, api_key, prompt, output_path, sem):
+async def _generate_gemini(client, api_key, prompt, output_path, sem, size):
+    """Generate an image via Google's Gemini API (Nano Banana 2)."""
+    async with sem:
+        body = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "responseModalities": ["IMAGE"],
+                "imageConfig": {
+                    "aspectRatio": size,
+                    "imageSize": "1K",
+                },
+            },
+        }
+        resp = await _request(
+            client,
+            "post",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+            headers={
+                "x-goog-api-key": api_key,
+                "Content-Type": "application/json",
+            },
+            json=body,
+            timeout=120,
+        )
+        data = resp.json()
+
+        # Extract base64 image from response parts
+        for part in data["candidates"][0]["content"]["parts"]:
+            if "inlineData" in part:
+                img_bytes = base64.b64decode(part["inlineData"]["data"])
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                output_path.write_bytes(img_bytes)
+                return
+
+        raise RuntimeError("No image data in Gemini response")
+
+
+async def _generate_openai(client, api_key, prompt, output_path, sem, size):
     """Generate an image via OpenAI's gpt-image-1 API."""
     async with sem:
         resp = await _request(
@@ -59,11 +135,12 @@ async def _generate_openai(client, api_key, prompt, output_path, sem):
                 "Content-Type": "application/json",
             },
             json={
-                "model": "gpt-image-1.5",
+                "model": "gpt-image-1",
                 "prompt": prompt,
                 "n": 1,
-                "size": "1024x1024",
+                "size": size,
                 "quality": "low",
+                "output_format": "png",
             },
             timeout=180,
         )
@@ -74,7 +151,7 @@ async def _generate_openai(client, api_key, prompt, output_path, sem):
         output_path.write_bytes(img_bytes)
 
 
-async def _generate_fal(client, api_key, prompt, output_path, sem):
+async def _generate_fal(client, api_key, prompt, output_path, sem, size):
     """Generate an image via fal.ai's Flux 2 Pro endpoint."""
     async with sem:
         resp = await _request(
@@ -87,7 +164,7 @@ async def _generate_fal(client, api_key, prompt, output_path, sem):
             },
             json={
                 "prompt": prompt,
-                "image_size": "square_hd",
+                "image_size": size,
                 "num_images": 1,
             },
             timeout=120,
@@ -101,7 +178,7 @@ async def _generate_fal(client, api_key, prompt, output_path, sem):
         output_path.write_bytes(img_resp.content)
 
 
-async def _generate_stability(client, api_key, prompt, output_path, sem):
+async def _generate_stability(client, api_key, prompt, output_path, sem, size):
     """Generate an image via Stability AI's SD 3.5 API."""
     async with sem:
         resp = await _request(
@@ -117,7 +194,7 @@ async def _generate_stability(client, api_key, prompt, output_path, sem):
                 "prompt": (None, prompt),
                 "model": (None, "sd3.5-large"),
                 "output_format": (None, "png"),
-                "aspect_ratio": (None, "1:1"),
+                "aspect_ratio": (None, size),
             },
             timeout=120,
         )
@@ -129,6 +206,7 @@ async def _generate_stability(client, api_key, prompt, output_path, sem):
 
 
 _GENERATORS = {
+    "Google Nano Banana 2": _generate_gemini,
     "OpenAI GPT Image": _generate_openai,
     "fal.ai Flux 2 Pro": _generate_fal,
     "Stability AI SD 3.5": _generate_stability,
@@ -138,7 +216,7 @@ _GENERATORS = {
 # ── Batch orchestration ──────────────────────────────────────────────────────
 
 
-async def generate_batch(provider_name, api_key, tasks):
+async def generate_batch(provider_name, api_key, tasks, size):
     """Run all generation tasks in parallel with progress output."""
     provider = PROVIDERS[provider_name]
     generator = _GENERATORS[provider_name]
@@ -151,7 +229,7 @@ async def generate_batch(provider_name, api_key, tasks):
     async def run_task(client, task):
         nonlocal completed
         try:
-            await generator(client, api_key, task["prompt"], task["output_path"], sem)
+            await generator(client, api_key, task["prompt"], task["output_path"], sem, size)
         except httpx.HTTPStatusError as e:
             body = e.response.text[:300] if e.response else ""
             failed.append({"path": str(task["output_path"]), "error": f"{e} — {body}"})
@@ -174,3 +252,5 @@ async def generate_batch(provider_name, api_key, tasks):
             print(f"    {f['path']}: {f['error']}")
         if len(failed) > 10:
             print(f"    ... and {len(failed) - 10} more")
+
+    return len(failed)
