@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md (templates CLI create wizard and list command)
-last_updated: "2026-03-13T04:59:19.506Z"
-last_activity: 2026-03-13 — Completed plan 01-02 (template_engine.py with load/validate/expand pipeline)
+stopped_at: Completed quick-1-01-PLAN.md (regroup output by age/ethnicity instead of template)
+last_updated: "2026-03-13T07:28:21Z"
+last_activity: 2026-03-13 — Completed quick task 1 (output path reordering to age/ethnicity/template)
 progress:
   total_phases: 3
   completed_phases: 3
@@ -70,7 +70,10 @@ Recent decisions affecting current work:
 - [01-01]: ETHNICITIES and AGE_GROUPS intentionally duplicated in demographics.py and generate.py for Phase 1 — deduplication deferred to Phase 2
 - [01-02]: Template slug derived from filename stem (not display name) — output paths stable if user renames template display name
 - [01-02]: Collection scene slugs use {path.stem}-{slugify(name)} format for human-readable stable paths
-- [01-02]: expand_to_tasks() output path structure: output_dir/slug/age/ethnicity/gender_NNN.png
+- [01-02]: expand_to_tasks() output path structure: output_dir/slug/age/ethnicity/gender_NNN.png (superseded by quick-1)
+- [quick-1]: expand_to_tasks() output path changed to output_dir/age/ethnicity/slug/gender_NNN.png — demographic-first browsing
+- [quick-1]: combo_label parsing updated to use slug_idx-2 (age) and slug_idx-1 (ethnicity) for new path order
+- [quick-1]: Output dir wiped with shutil.rmtree at start of each generation run (not dry-run)
 - [Phase 01-03]: Seed templates use ## name:/description:/tags: headers exactly matching the locked .txt format — confirms format usable without edge cases
 - [Phase 01-03]: Photography style directives embedded inline in template body (not metadata) — richer prompts, composable with demographic fills
 - [Phase 02-generation-refactor]: show_cost_confirmation accepts cost_per_image float directly (not provider_name) — more testable
@@ -98,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T04:56:45.318Z
-Stopped at: Completed 03-01-PLAN.md (templates CLI create wizard and list command)
+Last session: 2026-03-13T07:28:21Z
+Stopped at: Completed quick-1-01-PLAN.md (regroup output by age/ethnicity instead of template)
 Resume file: None
