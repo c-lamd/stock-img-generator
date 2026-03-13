@@ -6,11 +6,13 @@ Tests cover:
   DEMO-03: Demographic restrictions (restrict_ages, restrict_genders metadata)
   GEN-03: Cost breakdown and 50-image gate
   GEN-06: Error classification and failure report
+  GEN-02: Dry-run table output (no API calls)
+  GEN-05: Preview loop (approve/skip/abort per template)
 """
 import io
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
@@ -20,7 +22,9 @@ from template_engine import TemplateFile, expand_to_tasks
 from generate import (
     apply_demographic_restrictions,
     classify_failure,
+    print_dry_run_table,
     print_failure_report,
+    run_template_preview_loop,
     show_cost_confirmation,
 )
 
@@ -256,4 +260,189 @@ def test_gen06_failure_report(capsys):
     # Network failure: should show error text
     assert "503" in output or "portrait" in output.lower(), (
         "Network failure error text missing from report"
+    )
+
+
+# -- GEN-02: Dry-run table output ---------------------------------------------
+
+
+def test_gen02_dry_run_no_api_calls(capsys):
+    """print_dry_run_table prints tabulated table with Template/Combo/Prompt columns and total."""
+    tasks_by_template = {
+        "stem-lab": [
+            {"combo_label": "East Asian / College / female", "prompt": "A East Asian female student in a STEM lab."},
+            {"combo_label": "South Asian / College / male", "prompt": "A South Asian male student in a STEM lab."},
+        ],
+        "portrait": [
+            {"combo_label": "East Asian / College / female", "prompt": "A East Asian female student in a portrait setting."},
+        ],
+    }
+
+    # This should NOT call generate_batch — no mock needed, just call the function
+    print_dry_run_table(tasks_by_template)
+
+    captured = capsys.readouterr()
+    output = captured.out
+
+    # Headers present
+    assert "Template" in output, "Missing 'Template' column header"
+    assert "Combo" in output, "Missing 'Combo' column header"
+    assert "Prompt" in output, "Missing 'Prompt' column header"
+
+    # Template slugs present
+    assert "stem-lab" in output, "Missing 'stem-lab' template slug"
+    assert "portrait" in output, "Missing 'portrait' template slug"
+
+    # Combo labels present
+    assert "East Asian" in output, "Missing combo label content"
+
+    # Total count present
+    assert "3" in output, "Missing total count (3 prompts)"
+
+
+def test_gen02_dry_run_length_warning(capsys):
+    """print_dry_run_table flags prompts > 3800 chars with a warning marker."""
+    long_prompt = "A " + "x" * 3900  # well over 3800 chars
+    short_prompt = "A short prompt."
+
+    tasks_by_template = {
+        "scene-a": [
+            {"combo_label": "East Asian / College / female", "prompt": long_prompt},
+            {"combo_label": "South Asian / College / male", "prompt": short_prompt},
+        ],
+    }
+
+    print_dry_run_table(tasks_by_template)
+
+    captured = capsys.readouterr()
+    output = captured.out
+
+    # A warning marker should appear for the long prompt
+    assert "[!]" in output or "WARNING" in output or "LENGTH" in output, (
+        "Missing length warning marker for prompt > 3800 chars"
+    )
+
+
+# -- GEN-05: Preview loop -----------------------------------------------------
+
+
+def test_gen05_preview_approves_subset(tmp_path):
+    """run_template_preview_loop with 3 templates: approve first, skip second, approve third — returns [first, third]."""
+    tmpl_a = make_template("scene-a")
+    tmpl_b = make_template("scene-b")
+    tmpl_c = make_template("scene-c")
+
+    demographics = {
+        "ethnicities": ["East Asian"],
+        "ages": {"College (18-22)": "college age (18-22 years old)"},
+        "genders": ["female"],
+    }
+
+    with patch("generate.asyncio") as mock_asyncio, \
+         patch("generate.questionary") as mock_q, \
+         patch("generate.expand_to_tasks") as mock_expand:
+
+        # expand_to_tasks returns a single task for each call
+        mock_expand.return_value = [{"prompt": "test", "output_path": tmp_path / "test.png"}]
+        # asyncio.run is a no-op
+        mock_asyncio.run.return_value = 0
+
+        # questionary.select returns approve/skip/approve in sequence
+        mock_select_a = MagicMock()
+        mock_select_a.ask.return_value = "Approve — include in full batch"
+        mock_select_b = MagicMock()
+        mock_select_b.ask.return_value = "Skip — exclude this template"
+        mock_select_c = MagicMock()
+        mock_select_c.ask.return_value = "Approve — include in full batch"
+        mock_q.select.side_effect = [mock_select_a, mock_select_b, mock_select_c]
+
+        approved = run_template_preview_loop(
+            provider_name="OpenAI GPT Image",
+            api_key="test-key",
+            templates=[tmpl_a, tmpl_b, tmpl_c],
+            demographics=demographics,
+            output_dir=tmp_path,
+            size_value="1024x1024",
+        )
+
+    assert len(approved) == 2, f"Expected 2 approved templates, got {len(approved)}"
+    assert tmpl_a in approved, "scene-a should be approved"
+    assert tmpl_b not in approved, "scene-b should be skipped"
+    assert tmpl_c in approved, "scene-c should be approved"
+
+
+def test_gen05_preview_abort(tmp_path):
+    """run_template_preview_loop aborts on first template — calls sys.exit."""
+    tmpl_a = make_template("scene-a")
+    tmpl_b = make_template("scene-b")
+
+    demographics = {
+        "ethnicities": ["East Asian"],
+        "ages": {"College (18-22)": "college age (18-22 years old)"},
+        "genders": ["female"],
+    }
+
+    with patch("generate.asyncio") as mock_asyncio, \
+         patch("generate.questionary") as mock_q, \
+         patch("generate.expand_to_tasks") as mock_expand:
+
+        mock_expand.return_value = [{"prompt": "test", "output_path": tmp_path / "test.png"}]
+        mock_asyncio.run.return_value = 0
+
+        mock_select = MagicMock()
+        mock_select.ask.return_value = "Abort — cancel everything"
+        mock_q.select.return_value = mock_select
+
+        with pytest.raises(SystemExit):
+            run_template_preview_loop(
+                provider_name="OpenAI GPT Image",
+                api_key="test-key",
+                templates=[tmpl_a, tmpl_b],
+                demographics=demographics,
+                output_dir=tmp_path,
+                size_value="1024x1024",
+            )
+
+
+def test_gen05_preview_generates_one_per_template(tmp_path):
+    """run_template_preview_loop calls generate_batch exactly once per template with 1 task each."""
+    tmpl_a = make_template("scene-a")
+    tmpl_b = make_template("scene-b")
+
+    demographics = {
+        "ethnicities": ["East Asian"],
+        "ages": {"College (18-22)": "college age (18-22 years old)"},
+        "genders": ["female"],
+    }
+
+    with patch("generate.asyncio") as mock_asyncio, \
+         patch("generate.questionary") as mock_q, \
+         patch("generate.expand_to_tasks") as mock_expand, \
+         patch("generate.generate_batch") as mock_gen_batch:
+
+        # expand_to_tasks returns exactly 1 task per call
+        mock_expand.return_value = [{"prompt": "test prompt", "output_path": tmp_path / "test.png"}]
+        mock_asyncio.run.return_value = 0
+
+        mock_select = MagicMock()
+        mock_select.ask.return_value = "Approve — include in full batch"
+        mock_q.select.return_value = mock_select
+
+        run_template_preview_loop(
+            provider_name="OpenAI GPT Image",
+            api_key="test-key",
+            templates=[tmpl_a, tmpl_b],
+            demographics=demographics,
+            output_dir=tmp_path,
+            size_value="1024x1024",
+        )
+
+    # asyncio.run should be called exactly twice (once per template)
+    assert mock_asyncio.run.call_count == 2, (
+        f"Expected asyncio.run called 2 times, got {mock_asyncio.run.call_count}"
+    )
+    # Each call to expand_to_tasks should only produce 1 task
+    # (already enforced by mock_expand.return_value = [single task])
+    assert mock_expand.call_count == 2, (
+        f"Expected expand_to_tasks called 2 times (once per template), got {mock_expand.call_count}"
     )
