@@ -243,11 +243,99 @@ def print_failure_report(failed, tasks_by_path):
             print(f"    ERROR: {f['path']}: {f['error'][:150]}")
 
 
-# -- Preview Loop Stub (implemented in Plan 02-02) ----------------------------
+# -- Dry-Run Table Output (GEN-02) --------------------------------------------
 
 
-def run_template_preview_loop():
-    raise NotImplementedError("Plan 02-02")
+def print_dry_run_table(tasks_by_template):
+    """Print all rendered prompts as a tabulated table without making any API calls.
+
+    Args:
+        tasks_by_template: dict mapping template slug to list of task info dicts.
+            Each task info dict must have "combo_label" and "prompt" keys.
+
+    Prints:
+        Table with Template / Combo / Prompt (truncated) columns.
+        Total prompt count.
+        Length warnings for any prompts exceeding 3800 characters.
+    """
+    rows = []
+    long_prompts = []  # (slug, combo_label, length) tuples for warnings
+
+    for slug, tasks in tasks_by_template.items():
+        for task in tasks:
+            prompt = task["prompt"]
+            truncated = prompt[:80] + "..." if len(prompt) > 80 else prompt
+            rows.append([slug, task["combo_label"], truncated])
+            if len(prompt) > 3800:
+                long_prompts.append((slug, task["combo_label"], len(prompt)))
+
+    print(tabulate(rows, headers=["Template", "Combo", "Prompt (truncated)"], tablefmt="simple"))
+    total = sum(len(v) for v in tasks_by_template.values())
+    print(f"\nTotal: {total} prompts")
+
+    if long_prompts:
+        print("\n[!] LENGTH WARNINGS — prompts exceeding 3800 chars (OpenAI limit is ~4000):")
+        for slug, combo, length in long_prompts:
+            print(f"    [!] {slug} | {combo} — {length} chars")
+
+
+# -- Preview Loop (GEN-05) ----------------------------------------------------
+
+
+def run_template_preview_loop(provider_name, api_key, templates, demographics, output_dir, size_value):
+    """Generate one preview image per template, ask approve/skip/abort for each.
+
+    Sequential by design: each template is previewed and reviewed before the next.
+    Do NOT refactor to asyncio.gather — that would parallelize previews and bypass
+    the per-template approve/skip/abort UX.
+
+    Args:
+        provider_name: str — provider key from PROVIDERS dict
+        api_key: str — API key for the provider
+        templates: list[TemplateFile] — templates to preview
+        demographics: dict with keys "ethnicities", "ages", "genders"
+        output_dir: Path — base output directory (previews go to output_dir/_preview/)
+        size_value: str — image size value for the provider
+
+    Returns:
+        list[TemplateFile] — approved templates (subset of input)
+    """
+    approved = []
+    preview_dir = Path(output_dir) / "_preview"
+
+    for tmpl in templates:
+        # Take first demographic combo for the preview image
+        first_ethnicity = [demographics["ethnicities"][0]]
+        first_age_key = list(demographics["ages"].keys())[0]
+        first_ages = {first_age_key: demographics["ages"][first_age_key]}
+        first_gender = [demographics["genders"][0]]
+
+        preview_tasks = expand_to_tasks(
+            [tmpl], first_ethnicity, first_ages, first_gender, preview_dir
+        )
+        preview_task = preview_tasks[0]
+
+        print(f"\n  Generating preview for: {tmpl.name}")
+        # asyncio.run called once per template (sequential preview, not parallel)
+        asyncio.run(generate_batch(provider_name, api_key, [preview_task], size_value))
+        print(f"  Saved: {preview_task['output_path']}")
+
+        action = questionary.select(
+            f"Preview for '{tmpl.name}':",
+            choices=[
+                "Approve — include in full batch",
+                "Skip — exclude this template",
+                "Abort — cancel everything",
+            ],
+        ).ask()
+
+        if not action or action.startswith("Abort"):
+            sys.exit(0)
+        elif action.startswith("Approve"):
+            approved.append(tmpl)
+        # Skip: template not added to approved list
+
+    return approved
 
 
 # -- Main ---------------------------------------------------------------------
@@ -264,7 +352,7 @@ def main():
     )
     parser.add_argument(
         "--dry-run", action="store_true",
-        help="Print all rendered prompts as a table without making any API calls (Plan 02-02)"
+        help="Print all rendered prompts as a table without making any API calls"
     )
     args = parser.parse_args()
 
@@ -278,6 +366,7 @@ def main():
     size_label, size_value = select_resolution(provider_name)
     provider = PROVIDERS[provider_name]
     cost_per_image = provider["cost_per_image"]
+    api_key = os.getenv(provider["env_var"])
 
     # -- Template and demographic selection --
     selected_templates = select_templates()
@@ -286,6 +375,7 @@ def main():
     # -- Expand tasks per template, applying demographic restrictions --
     output_dir = Path(args.output)
     all_tasks = []
+    tasks_by_template = {}  # slug -> list of task info dicts for dry-run
     template_task_counts = []
 
     for tmpl in selected_templates:
@@ -299,30 +389,76 @@ def main():
         all_tasks.extend(tasks)
         template_task_counts.append((tmpl.name, len(tasks)))
 
-    # -- Dry-run placeholder (Plan 02-02) --
+        # Build dry-run info dicts with combo_label for each task
+        task_infos = []
+        for task in tasks:
+            # Derive combo_label from the output path components
+            # Path structure: output_dir/slug/age/ethnicity/gender_NNN.png
+            parts = task["output_path"].parts
+            # Find the slug position and extract age/ethnicity/gender from subsequent parts
+            try:
+                slug_idx = parts.index(tmpl.slug)
+                age_slug = parts[slug_idx + 1] if slug_idx + 1 < len(parts) else "?"
+                ethnicity_slug = parts[slug_idx + 2] if slug_idx + 2 < len(parts) else "?"
+                gender_file = parts[slug_idx + 3] if slug_idx + 3 < len(parts) else "?"
+                gender_part = gender_file.split("_")[0] if "_" in gender_file else gender_file
+                combo_label = f"{ethnicity_slug} / {age_slug} / {gender_part}"
+            except (ValueError, IndexError):
+                combo_label = str(task["output_path"])
+            task_infos.append({"combo_label": combo_label, "prompt": task["prompt"]})
+        tasks_by_template[tmpl.slug] = task_infos
+
+    # -- Dry-run: print table and exit without making any API calls --
     if args.dry_run:
-        print("  [dry-run not yet implemented — Plan 02-02]")
+        print_dry_run_table(tasks_by_template)
         return
 
-    # -- Preview loop placeholder (Plan 02-02) --
-    if not args.no_preview:
-        pass  # run_template_preview_loop() — implemented in Plan 02-02
-
-    # -- Cost confirmation --
-    api_key = os.getenv(provider["env_var"])
+    # -- Cost confirmation (before preview — per Pitfall 2 from RESEARCH.md) --
     show_cost_confirmation(template_task_counts, cost_per_image)
 
-    # -- Generate --
-    tasks_by_path = {str(t["output_path"]): t["prompt"] for t in all_tasks}
+    # -- Preview loop: generate one sample per template, approve/skip/abort --
+    if not args.no_preview:
+        approved_templates = run_template_preview_loop(
+            provider_name=provider_name,
+            api_key=api_key,
+            templates=selected_templates,
+            demographics=demographics,
+            output_dir=output_dir,
+            size_value=size_value,
+        )
+
+        # Rebuild task list for approved templates only
+        if len(approved_templates) < len(selected_templates):
+            all_tasks = []
+            for tmpl in approved_templates:
+                eth, ages, genders = apply_demographic_restrictions(
+                    tmpl,
+                    demographics["ethnicities"],
+                    demographics["ages"],
+                    demographics["genders"],
+                )
+                tasks = expand_to_tasks([tmpl], eth, ages, genders, output_dir)
+                all_tasks.extend(tasks)
+
+        if not all_tasks:
+            print("\nNo templates approved. Nothing to generate.")
+            return
+
+    # -- Generate full batch --
     failure_count = asyncio.run(generate_batch(provider_name, api_key, all_tasks, size_value))
 
     # -- Failure report --
+    # Note: generate_batch returns failure count (int) only; the failed list is internal to
+    # providers.py (providers.py is LOCKED — cannot be modified). providers.py already prints
+    # path + error for each failure. The classify_failure / print_failure_report functions
+    # are ready for use when generate_batch is later updated to return the failed list.
+    # TODO: Update this block when providers.py exposes the failed list.
     if failure_count:
-        # Note: generate_batch returns count; actual failed dicts not available in this skeleton
-        print(f"\n  {failure_count} image(s) failed. Check output for details.")
+        print(f"\n  {failure_count} image(s) failed. See above for details.")
 
     total_images = len(all_tasks)
-    print(f"\nDone! {total_images} images saved to {output_dir}/")
+    succeeded = total_images - failure_count
+    print(f"\nDone! {succeeded}/{total_images} images saved to {output_dir}/")
 
 
 if __name__ == "__main__":
