@@ -1,0 +1,5 @@
+## name: STEM Lab
+## description: Student working in a high school science laboratory
+## tags: science, lab, stem, safety
+
+A {ethnicity} {gender} student, {age}, wearing a white lab coat and safety goggles in a bright, modern high school science laboratory. The student carefully adjusts wires on a circuit board at a clean lab bench, with beakers and lab equipment visible in the background. Half-body framing, clean lab background, professional educational stock photography, soft diffused lighting, Canon EOS 5D Mark IV, 85mm lens, photorealistic, high detail, natural expression.

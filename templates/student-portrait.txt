@@ -1,0 +1,5 @@
+## name: Student Portrait
+## description: Individual student portrait with school context
+## tags: portrait, student, headshot
+
+A confident {ethnicity} {gender} student, {age}, standing in a modern school hallway with soft natural light streaming through large windows. The student wears casual school attire and carries a backpack, looking directly at the camera with a warm, genuine smile. Upper body portrait framing, shallow depth of field with blurred hallway background, professional educational stock photography, soft natural window lighting, Canon EOS 5D Mark IV, 85mm f/1.8 lens, photorealistic, high detail, natural relaxed pose.
