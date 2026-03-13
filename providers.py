@@ -59,12 +59,11 @@ async def _generate_openai(client, api_key, prompt, output_path, sem):
                 "Content-Type": "application/json",
             },
             json={
-                "model": "gpt-image-1",
+                "model": "gpt-image-1.5",
                 "prompt": prompt,
                 "n": 1,
                 "size": "1024x1024",
                 "quality": "low",
-                "response_format": "b64_json",
             },
             timeout=180,
         )
@@ -153,6 +152,9 @@ async def generate_batch(provider_name, api_key, tasks):
         nonlocal completed
         try:
             await generator(client, api_key, task["prompt"], task["output_path"], sem)
+        except httpx.HTTPStatusError as e:
+            body = e.response.text[:300] if e.response else ""
+            failed.append({"path": str(task["output_path"]), "error": f"{e} — {body}"})
         except Exception as e:
             failed.append({"path": str(task["output_path"]), "error": str(e)})
         finally:
