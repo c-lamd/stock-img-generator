@@ -17,16 +17,16 @@
 ### Generation Workflow
 
 - [x] **GEN-01**: Tool generates one image per template × demographic combination (scene × ethnicity × age × gender)
-- [ ] **GEN-02**: User can dry-run to preview all rendered prompts as text before any API calls are made
+- [x] **GEN-02**: User can dry-run to preview all rendered prompts as text before any API calls are made
 - [x] **GEN-03**: Cost confirmation shows per-template breakdown and total (not just total)
 - [x] **GEN-04**: Output file paths include template slug to prevent cross-template file overwrites
-- [ ] **GEN-05**: Preview mode works with template-based prompts (1 sample per template, review, tweak, approve)
+- [x] **GEN-05**: Preview mode works with template-based prompts (1 sample per template, review, tweak, approve)
 - [x] **GEN-06**: Failed generations distinguish content policy rejections from network/API errors in failure reports
 
 ### User Experience
 
 - [x] **UX-01**: Tool ships with seed templates based on proven prompts (STEM lab, STEM electronics pair, student portrait, science jump) so users can generate immediately without authoring templates first
-- [ ] **UX-02**: Default workflow requires minimal steps — select templates, select demographics, generate (no unnecessary confirmations or config)
+- [x] **UX-02**: Default workflow requires minimal steps — select templates, select demographics, generate (no unnecessary confirmations or config)
 
 ### Demographics
 
@@ -66,16 +66,16 @@
 | TMPL-05 | Phase 1 | Complete (01-02) |
 | TMPL-06 | Phase 3 | Pending |
 | GEN-01 | Phase 2 | Complete |
-| GEN-02 | Phase 2 | Pending |
+| GEN-02 | Phase 2 | Complete |
 | GEN-03 | Phase 2 | Complete |
 | GEN-04 | Phase 2 | Complete |
-| GEN-05 | Phase 2 | Pending |
+| GEN-05 | Phase 2 | Complete |
 | GEN-06 | Phase 2 | Complete |
 | DEMO-01 | Phase 1 | Complete (01-01) |
 | DEMO-02 | Phase 1 | Complete (01-01) |
 | DEMO-03 | Phase 2 | Complete |
 | UX-01 | Phase 1 | Complete |
-| UX-02 | Phase 2 | Pending |
+| UX-02 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 17 total

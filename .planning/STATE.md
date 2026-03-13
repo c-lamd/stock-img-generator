@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md (generate.py rewrite — 6 new functions, 12 new tests, 33 total pass)
-last_updated: "2026-03-13T04:18:27.662Z"
+stopped_at: "Checkpoint 02-02 Task 3 (human-verify: complete template-based generation flow)"
+last_updated: "2026-03-13T04:25:23.600Z"
 last_activity: 2026-03-13 — Completed plan 01-02 (template_engine.py with load/validate/expand pipeline)
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 100
 ---
 
@@ -52,6 +52,7 @@ Progress: [██████████] 100%
 *Updated after each plan completion*
 | Phase 01-template-engine P01-03 | 2min | 1 tasks | 5 files |
 | Phase 02-generation-refactor P01 | 3 | 2 tasks | 3 files |
+| Phase 02-generation-refactor P02 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 02-generation-refactor]: show_cost_confirmation accepts cost_per_image float directly (not provider_name) — more testable
 - [Phase 02-generation-refactor]: POLICY_KEYWORDS tuple includes broad keywords (blocked, policy) for speculative fal.ai coverage
 - [Phase 02-generation-refactor]: run_template_preview_loop() raises NotImplementedError('Plan 02-02') — not a silent pass stub
+- [Phase 02-generation-refactor]: Cost gate fires before preview loop — prevents spending preview API calls then declining the full batch
+- [Phase 02-generation-refactor]: asyncio.run() called once per template (sequential) — not asyncio.gather, preserves per-template approve/skip/abort UX
+- [Phase 02-generation-refactor]: generate_batch failure count only: providers.py LOCKED; classify_failure/print_failure_report ready with TODO comment
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T04:18:27.639Z
-Stopped at: Completed 02-01-PLAN.md (generate.py rewrite — 6 new functions, 12 new tests, 33 total pass)
+Last session: 2026-03-13T04:25:23.586Z
+Stopped at: Checkpoint 02-02 Task 3 (human-verify: complete template-based generation flow)
 Resume file: None
