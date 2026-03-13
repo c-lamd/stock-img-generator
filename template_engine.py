@@ -176,6 +176,11 @@ def load_templates_dir(directory):
 def expand_to_tasks(templates, ethnicities, ages, genders, output_dir, count=1):
     """Expand templates across the demographic matrix into generation task dicts.
 
+    Output path structure: output_dir / age_slug / ethnicity_slug / tmpl.slug / gender_NNN.png
+
+    Grouping by age and ethnicity first makes it easy to compare the same demographic
+    across different templates when browsing generated images.
+
     Args:
         templates: list[TemplateFile]
         ethnicities: list[str]
@@ -197,9 +202,9 @@ def expand_to_tasks(templates, ethnicities, ages, genders, output_dir, count=1):
         for i in range(count):
             output_path = (
                 output_dir
-                / tmpl.slug
                 / slugify(age_key)
                 / slugify(ethnicity)
+                / tmpl.slug
                 / f"{gender.lower()}_{i + 1:03d}.png"
             )
             tasks.append({"prompt": prompt, "output_path": output_path})

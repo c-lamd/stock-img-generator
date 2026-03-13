@@ -147,3 +147,39 @@ def test_expand_to_tasks_with_count(tmp_path):
     filenames = [task["output_path"].name for task in tasks]
     assert any("_001.png" in f for f in filenames)
     assert any("_002.png" in f for f in filenames)
+
+
+def test_expand_to_tasks_path_order_age_ethnicity_first(tmp_path):
+    """output_path has age slug before ethnicity slug, and both before template slug."""
+    tmpl = load_template(FIXTURES / "valid_template.txt")
+    tasks = expand_to_tasks(
+        [tmpl],
+        SAMPLE_ETHNICITIES,
+        SAMPLE_AGES,
+        SAMPLE_GENDERS,
+        tmp_path,
+        count=1,
+    )
+    for task in tasks:
+        parts = task["output_path"].parts
+        # template slug, age slug, and ethnicity slug must all appear in path parts
+        assert tmpl.slug in parts, f"Template slug '{tmpl.slug}' not in path parts: {parts}"
+        # Find indices of each component
+        slug_idx = parts.index(tmpl.slug)
+        # There must be at least 2 parts before the slug (age and ethnicity)
+        assert slug_idx >= 2, (
+            f"Expected slug at index >= 2 (age and ethnicity before it), got index {slug_idx}"
+        )
+        age_slug = parts[slug_idx - 2]
+        ethnicity_slug = parts[slug_idx - 1]
+        # age slug should contain something from the age key (slugified "High School (14-17)")
+        assert "high-school" in age_slug, f"Age slug '{age_slug}' missing 'high-school'"
+        # ethnicity slug should correspond to one of the sample ethnicities
+        assert age_slug != tmpl.slug, "Age and template slug must differ"
+        assert ethnicity_slug != tmpl.slug, "Ethnicity and template slug must differ"
+        # Age must come before ethnicity in path (index check)
+        eth_idx_in_parts = slug_idx - 1
+        age_idx_in_parts = slug_idx - 2
+        assert age_idx_in_parts < eth_idx_in_parts < slug_idx, (
+            f"Expected order: age({age_idx_in_parts}) < ethnicity({eth_idx_in_parts}) < slug({slug_idx})"
+        )
