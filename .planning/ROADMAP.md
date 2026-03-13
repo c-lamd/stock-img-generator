@@ -12,7 +12,7 @@ This milestone replaces the existing variable-combination prompt system with a t
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Template Engine** - Build the data layer: demographics constants, template file format, loader, validation, and Cartesian expansion — no CLI changes
+- [x] **Phase 1: Template Engine** - Build the data layer: demographics constants, template file format, loader, validation, and Cartesian expansion — no CLI changes (completed 2026-03-13)
 - [ ] **Phase 2: Generation Refactor** - Replace the variable-combination workflow in generate.py with template-based generation, preserving the preview loop and adding dry-run and improved cost display
 - [ ] **Phase 3: Template Management CLI** - Add the interactive template creation wizard and list/view commands as a standalone templates.py module
 
@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A template file with per-scene photography style directives (lighting, framing, background) produces prompts that include those directives verbatim in every rendered output
   4. Multiple scene templates stored in a single collection file are each expanded independently across the full demographic matrix
   5. The four seed templates (STEM lab, STEM electronics pair, student portrait, science jump) exist on disk and generate valid prompts when loaded
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Demographics constants module (ETHNICITIES, AGE_GROUPS, GENDERS) and test infrastructure
@@ -65,6 +65,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template Engine | 2/3 | In progress | - |
+| 1. Template Engine | 3/3 | Complete   | 2026-03-13 |
 | 2. Generation Refactor | 0/TBD | Not started | - |
 | 3. Template Management CLI | 0/TBD | Not started | - |

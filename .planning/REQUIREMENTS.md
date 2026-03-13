@@ -25,7 +25,7 @@
 
 ### User Experience
 
-- [ ] **UX-01**: Tool ships with seed templates based on proven prompts (STEM lab, STEM electronics pair, student portrait, science jump) so users can generate immediately without authoring templates first
+- [x] **UX-01**: Tool ships with seed templates based on proven prompts (STEM lab, STEM electronics pair, student portrait, science jump) so users can generate immediately without authoring templates first
 - [ ] **UX-02**: Default workflow requires minimal steps — select templates, select demographics, generate (no unnecessary confirmations or config)
 
 ### Demographics
@@ -74,7 +74,7 @@
 | DEMO-01 | Phase 1 | Complete (01-01) |
 | DEMO-02 | Phase 1 | Complete (01-01) |
 | DEMO-03 | Phase 2 | Pending |
-| UX-01 | Phase 1 | Pending |
+| UX-01 | Phase 1 | Complete |
 | UX-02 | Phase 2 | Pending |
 
 **Coverage:**
