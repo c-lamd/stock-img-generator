@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-12)
 ## Current Position
 
 Phase: 1 of 3 (Template Engine)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-13 — Completed plan 01-01 (demographics constants and test infrastructure)
+Last activity: 2026-03-13 — Completed plan 01-02 (template_engine.py with load/validate/expand pipeline)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: 1 min
-- Total execution time: 1 min
+- Total execution time: 2 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-template-engine | 1 | 1 min | 1 min |
+| 01-template-engine | 2 | 2 min | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (1 min)
-- Trend: -
+- Last 5 plans: 01-01 (1 min), 01-02 (1 min)
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -47,6 +47,9 @@ Recent decisions affecting current work:
 - [Init]: Four seed templates (STEM lab, STEM electronics pair, student portrait, science jump) ship with the tool as UX-01
 - [01-01]: GENDERS = ["male", "female"] using bare strings — template authors add context in template body
 - [01-01]: ETHNICITIES and AGE_GROUPS intentionally duplicated in demographics.py and generate.py for Phase 1 — deduplication deferred to Phase 2
+- [01-02]: Template slug derived from filename stem (not display name) — output paths stable if user renames template display name
+- [01-02]: Collection scene slugs use {path.stem}-{slugify(name)} format for human-readable stable paths
+- [01-02]: expand_to_tasks() output path structure: output_dir/slug/age/ethnicity/gender_NNN.png
 
 ### Pending Todos
 
@@ -61,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-13
-Stopped at: Completed 01-01-PLAN.md (demographics constants and test infrastructure)
+Stopped at: Completed 01-02-PLAN.md (template_engine.py with load/validate/expand pipeline)
 Resume file: None

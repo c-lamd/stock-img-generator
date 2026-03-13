@@ -7,11 +7,11 @@
 
 ### Template System
 
-- [ ] **TMPL-01**: User can create scene templates as YAML files with `{ethnicity}`, `{age}`, `{gender}` demographic placeholders
-- [ ] **TMPL-02**: User can include per-template photography style directives (lighting, background, framing) within each template
-- [ ] **TMPL-03**: Templates are validated at load time — missing or misnamed placeholders are caught before any API calls
+- [x] **TMPL-01**: User can create scene templates as YAML files with `{ethnicity}`, `{age}`, `{gender}` demographic placeholders
+- [x] **TMPL-02**: User can include per-template photography style directives (lighting, background, framing) within each template
+- [x] **TMPL-03**: Templates are validated at load time — missing or misnamed placeholders are caught before any API calls
 - [ ] **TMPL-04**: User can create templates interactively through a CLI wizard (guided step-by-step)
-- [ ] **TMPL-05**: User can store multiple scene templates in a single YAML collection file
+- [x] **TMPL-05**: User can store multiple scene templates in a single YAML collection file
 - [ ] **TMPL-06**: User can list, view, and manage existing templates from the CLI
 
 ### Generation Workflow
@@ -59,11 +59,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TMPL-01 | Phase 1 | Pending |
-| TMPL-02 | Phase 1 | Pending |
-| TMPL-03 | Phase 1 | Pending |
+| TMPL-01 | Phase 1 | Complete (01-02) |
+| TMPL-02 | Phase 1 | Complete (01-02) |
+| TMPL-03 | Phase 1 | Complete (01-02) |
 | TMPL-04 | Phase 3 | Pending |
-| TMPL-05 | Phase 1 | Pending |
+| TMPL-05 | Phase 1 | Complete (01-02) |
 | TMPL-06 | Phase 3 | Pending |
 | GEN-01 | Phase 2 | Pending |
 | GEN-02 | Phase 2 | Pending |
@@ -84,4 +84,4 @@
 
 ---
 *Requirements defined: 2026-03-12*
-*Last updated: 2026-03-13 after 01-01 completion (DEMO-01, DEMO-02 complete)*
+*Last updated: 2026-03-13 after 01-02 completion (TMPL-01, TMPL-02, TMPL-03, TMPL-05 complete)*

@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Demographics constants module (ETHNICITIES, AGE_GROUPS, GENDERS) and test infrastructure
-- [ ] 01-02-PLAN.md — Template engine core (loader, validator, expander, assembler)
+- [x] 01-02-PLAN.md — Template engine core (loader, validator, expander, assembler)
 - [ ] 01-03-PLAN.md — Four seed template files and integration tests
 
 ### Phase 2: Generation Refactor
@@ -65,6 +65,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Template Engine | 1/3 | In progress | - |
+| 1. Template Engine | 2/3 | In progress | - |
 | 2. Generation Refactor | 0/TBD | Not started | - |
 | 3. Template Management CLI | 0/TBD | Not started | - |
