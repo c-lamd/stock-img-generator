@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Template Engine** - Build the data layer: demographics constants, template file format, loader, validation, and Cartesian expansion — no CLI changes (completed 2026-03-13)
 - [ ] **Phase 2: Generation Refactor** - Replace the variable-combination workflow in generate.py with template-based generation, preserving the preview loop and adding dry-run and improved cost display
-- [ ] **Phase 3: Template Management CLI** - Add the interactive template creation wizard and list/view commands as a standalone templates.py module
+- [x] **Phase 3: Template Management CLI** - Add the interactive template creation wizard and list/view commands as a standalone templates.py module (completed 2026-03-13)
 
 ## Phase Details
 
@@ -60,15 +60,18 @@ Plans:
   1. User can run `python templates.py create` and complete a step-by-step wizard that writes a valid .txt template file (with correct placeholders and style directives) to the templates/ directory
   2. User can run `python templates.py list` and see each template's name, scene description preview (first 2-3 lines of body), and demographic restriction if any
   3. A template file created by the wizard loads and validates successfully in the template engine without errors
-**Plans**: TBD
+**Plans:** 1/1 plans complete
+
+Plans:
+- [ ] 03-01-PLAN.md — TDD: templates.py CLI with create wizard and list command (validate_body, cmd_create, cmd_list, main)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Template Engine | 3/3 | Complete   | 2026-03-13 |
 | 2. Generation Refactor | 0/2 | In progress | - |
-| 3. Template Management CLI | 0/TBD | Not started | - |
+| 3. Template Management CLI | 1/1 | Complete   | 2026-03-13 |

@@ -10,9 +10,9 @@
 - [x] **TMPL-01**: User can create scene templates as YAML files with `{ethnicity}`, `{age}`, `{gender}` demographic placeholders
 - [x] **TMPL-02**: User can include per-template photography style directives (lighting, background, framing) within each template
 - [x] **TMPL-03**: Templates are validated at load time — missing or misnamed placeholders are caught before any API calls
-- [ ] **TMPL-04**: User can create templates interactively through a CLI wizard (guided step-by-step)
+- [x] **TMPL-04**: User can create templates interactively through a CLI wizard (guided step-by-step)
 - [x] **TMPL-05**: User can store multiple scene templates in a single YAML collection file
-- [ ] **TMPL-06**: User can list, view, and manage existing templates from the CLI
+- [x] **TMPL-06**: User can list, view, and manage existing templates from the CLI
 
 ### Generation Workflow
 
@@ -62,9 +62,9 @@
 | TMPL-01 | Phase 1 | Complete (01-02) |
 | TMPL-02 | Phase 1 | Complete (01-02) |
 | TMPL-03 | Phase 1 | Complete (01-02) |
-| TMPL-04 | Phase 3 | Pending |
+| TMPL-04 | Phase 3 | Complete |
 | TMPL-05 | Phase 1 | Complete (01-02) |
-| TMPL-06 | Phase 3 | Pending |
+| TMPL-06 | Phase 3 | Complete |
 | GEN-01 | Phase 2 | Complete |
 | GEN-02 | Phase 2 | Complete |
 | GEN-03 | Phase 2 | Complete |
