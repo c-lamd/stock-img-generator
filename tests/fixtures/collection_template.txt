@@ -1,0 +1,11 @@
+## name: Scene Alpha
+## tags: test
+
+A {ethnicity} {gender} student, {age}, sitting at a desk.
+
+---
+
+## name: Scene Beta
+## tags: test
+
+Two {ethnicity} {gender} students, {age}, working together.

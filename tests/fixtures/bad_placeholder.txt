@@ -1,0 +1,3 @@
+## name: Bad Template
+
+A {ethnicity} {age_group} {gender} student in a classroom.

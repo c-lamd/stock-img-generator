@@ -1,0 +1,5 @@
+## name: Test Lab Scene
+## description: A test template for unit tests
+## tags: test, lab
+
+A {ethnicity} {gender} student, {age}, wearing a white lab coat in a bright laboratory. Professional stock photography, soft diffused lighting, Canon 5D Mark IV style, photorealistic.
