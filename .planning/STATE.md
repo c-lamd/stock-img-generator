@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Checkpoint 02-02 Task 3 (human-verify: complete template-based generation flow)"
-last_updated: "2026-03-13T04:25:23.600Z"
+stopped_at: Completed 02-02-PLAN.md (dry-run table, preview loop, main() flow)
+last_updated: "2026-03-13T04:34:44.201Z"
 last_activity: 2026-03-13 — Completed plan 01-02 (template_engine.py with load/validate/expand pipeline)
 progress:
   total_phases: 3
@@ -53,6 +53,7 @@ Progress: [██████████] 100%
 | Phase 01-template-engine P01-03 | 2min | 1 tasks | 5 files |
 | Phase 02-generation-refactor P01 | 3 | 2 tasks | 3 files |
 | Phase 02-generation-refactor P02 | 5 | 2 tasks | 2 files |
+| Phase 02-generation-refactor P02 | 5 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 02-generation-refactor]: Cost gate fires before preview loop — prevents spending preview API calls then declining the full batch
 - [Phase 02-generation-refactor]: asyncio.run() called once per template (sequential) — not asyncio.gather, preserves per-template approve/skip/abort UX
 - [Phase 02-generation-refactor]: generate_batch failure count only: providers.py LOCKED; classify_failure/print_failure_report ready with TODO comment
+- [Phase 02-generation-refactor]: Cost confirmation fires BEFORE preview loop — prevents spending preview API calls then declining full batch
+- [Phase 02-generation-refactor]: asyncio.run() called once per template in preview loop (sequential) — not refactored to asyncio.gather to preserve per-template approve/skip/abort UX
+- [Phase 02-generation-refactor]: generate_batch failure count only: providers.py LOCKED; classify_failure/print_failure_report ready with TODO comment for future use
 
 ### Pending Todos
 
@@ -90,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T04:25:23.586Z
-Stopped at: Checkpoint 02-02 Task 3 (human-verify: complete template-based generation flow)
+Last session: 2026-03-13T04:34:44.184Z
+Stopped at: Completed 02-02-PLAN.md (dry-run table, preview loop, main() flow)
 Resume file: None
