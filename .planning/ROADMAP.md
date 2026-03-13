@@ -46,7 +46,11 @@ Plans:
   4. Output files are organized under output/{template_slug}/{age}/{ethnicity}/ so two templates with the same demographics never overwrite each other
   5. Preview mode presents one sample image per template (using the first demographic combination) and lets the user approve, skip, or abort per template before the full batch runs
   6. Failed generations report whether each failure was a content policy rejection or a network/API error, with the exact prompt logged for policy rejections
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Core generate.py rewrite: remove old constants, implement template selection, demographic restrictions, cost breakdown, error classification
+- [ ] 02-02-PLAN.md — Dry-run table, per-template preview loop, complete main() flow wiring, end-to-end verification
 
 ### Phase 3: Template Management CLI
 **Goal**: Users can create, list, and inspect templates from the CLI without manually editing files — the wizard produces valid template files and the list command shows enough of each template to make a selection decision
@@ -66,5 +70,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Template Engine | 3/3 | Complete   | 2026-03-13 |
-| 2. Generation Refactor | 0/TBD | Not started | - |
+| 2. Generation Refactor | 0/2 | In progress | - |
 | 3. Template Management CLI | 0/TBD | Not started | - |
