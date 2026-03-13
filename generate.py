@@ -9,6 +9,7 @@ ethnicity, age, and gender using scene templates and your choice of AI provider.
 import argparse
 import asyncio
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -393,15 +394,15 @@ def main():
         task_infos = []
         for task in tasks:
             # Derive combo_label from the output path components
-            # Path structure: output_dir/slug/age/ethnicity/gender_NNN.png
+            # Path structure: output_dir/age/ethnicity/slug/gender_NNN.png
             parts = task["output_path"].parts
-            # Find the slug position and extract age/ethnicity/gender from subsequent parts
+            # Find the slug position; age is 2 before, ethnicity is 1 before, gender is 1 after
             try:
                 slug_idx = parts.index(tmpl.slug)
-                age_slug = parts[slug_idx + 1] if slug_idx + 1 < len(parts) else "?"
-                ethnicity_slug = parts[slug_idx + 2] if slug_idx + 2 < len(parts) else "?"
-                gender_file = parts[slug_idx + 3] if slug_idx + 3 < len(parts) else "?"
-                gender_part = gender_file.split("_")[0] if "_" in gender_file else gender_file
+                age_slug = parts[slug_idx - 2] if slug_idx >= 2 else "?"
+                ethnicity_slug = parts[slug_idx - 1] if slug_idx >= 1 else "?"
+                gender_file = parts[slug_idx + 1] if slug_idx + 1 < len(parts) else "?"
+                gender_part = gender_file.split("_")[0] if "_" in str(gender_file) else str(gender_file)
                 combo_label = f"{ethnicity_slug} / {age_slug} / {gender_part}"
             except (ValueError, IndexError):
                 combo_label = str(task["output_path"])
@@ -412,6 +413,11 @@ def main():
     if args.dry_run:
         print_dry_run_table(tasks_by_template)
         return
+
+    # -- Clean previous output for a fresh run --
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # -- Cost confirmation (before preview — per Pitfall 2 from RESEARCH.md) --
     show_cost_confirmation(template_task_counts, cost_per_image)
