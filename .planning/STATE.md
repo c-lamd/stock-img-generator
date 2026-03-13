@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md (four seed templates + integration tests, 21 tests pass)
-last_updated: "2026-03-13T03:45:24.824Z"
+stopped_at: Completed 02-01-PLAN.md (generate.py rewrite — 6 new functions, 12 new tests, 33 total pass)
+last_updated: "2026-03-13T04:18:27.662Z"
 last_activity: 2026-03-13 — Completed plan 01-02 (template_engine.py with load/validate/expand pipeline)
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 5
+  completed_plans: 4
   percent: 100
 ---
 
@@ -51,6 +51,7 @@ Progress: [██████████] 100%
 
 *Updated after each plan completion*
 | Phase 01-template-engine P01-03 | 2min | 1 tasks | 5 files |
+| Phase 02-generation-refactor P01 | 3 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [01-02]: expand_to_tasks() output path structure: output_dir/slug/age/ethnicity/gender_NNN.png
 - [Phase 01-03]: Seed templates use ## name:/description:/tags: headers exactly matching the locked .txt format — confirms format usable without edge cases
 - [Phase 01-03]: Photography style directives embedded inline in template body (not metadata) — richer prompts, composable with demographic fills
+- [Phase 02-generation-refactor]: show_cost_confirmation accepts cost_per_image float directly (not provider_name) — more testable
+- [Phase 02-generation-refactor]: POLICY_KEYWORDS tuple includes broad keywords (blocked, policy) for speculative fal.ai coverage
+- [Phase 02-generation-refactor]: run_template_preview_loop() raises NotImplementedError('Plan 02-02') — not a silent pass stub
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T03:45:24.807Z
-Stopped at: Completed 01-03-PLAN.md (four seed templates + integration tests, 21 tests pass)
+Last session: 2026-03-13T04:18:27.639Z
+Stopped at: Completed 02-01-PLAN.md (generate.py rewrite — 6 new functions, 12 new tests, 33 total pass)
 Resume file: None

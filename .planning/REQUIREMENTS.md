@@ -16,12 +16,12 @@
 
 ### Generation Workflow
 
-- [ ] **GEN-01**: Tool generates one image per template × demographic combination (scene × ethnicity × age × gender)
+- [x] **GEN-01**: Tool generates one image per template × demographic combination (scene × ethnicity × age × gender)
 - [ ] **GEN-02**: User can dry-run to preview all rendered prompts as text before any API calls are made
-- [ ] **GEN-03**: Cost confirmation shows per-template breakdown and total (not just total)
-- [ ] **GEN-04**: Output file paths include template slug to prevent cross-template file overwrites
+- [x] **GEN-03**: Cost confirmation shows per-template breakdown and total (not just total)
+- [x] **GEN-04**: Output file paths include template slug to prevent cross-template file overwrites
 - [ ] **GEN-05**: Preview mode works with template-based prompts (1 sample per template, review, tweak, approve)
-- [ ] **GEN-06**: Failed generations distinguish content policy rejections from network/API errors in failure reports
+- [x] **GEN-06**: Failed generations distinguish content policy rejections from network/API errors in failure reports
 
 ### User Experience
 
@@ -32,7 +32,7 @@
 
 - [x] **DEMO-01**: Gender is a demographic variable (male, female) selectable alongside ethnicity and age
 - [x] **DEMO-02**: Existing ethnicity and age group options are preserved from current tool
-- [ ] **DEMO-03**: Templates can optionally restrict which demographics they apply to (e.g., college-only scene, female-only scene)
+- [x] **DEMO-03**: Templates can optionally restrict which demographics they apply to (e.g., college-only scene, female-only scene)
 
 ## v2 Requirements
 
@@ -65,15 +65,15 @@
 | TMPL-04 | Phase 3 | Pending |
 | TMPL-05 | Phase 1 | Complete (01-02) |
 | TMPL-06 | Phase 3 | Pending |
-| GEN-01 | Phase 2 | Pending |
+| GEN-01 | Phase 2 | Complete |
 | GEN-02 | Phase 2 | Pending |
-| GEN-03 | Phase 2 | Pending |
-| GEN-04 | Phase 2 | Pending |
+| GEN-03 | Phase 2 | Complete |
+| GEN-04 | Phase 2 | Complete |
 | GEN-05 | Phase 2 | Pending |
-| GEN-06 | Phase 2 | Pending |
+| GEN-06 | Phase 2 | Complete |
 | DEMO-01 | Phase 1 | Complete (01-01) |
 | DEMO-02 | Phase 1 | Complete (01-01) |
-| DEMO-03 | Phase 2 | Pending |
+| DEMO-03 | Phase 2 | Complete |
 | UX-01 | Phase 1 | Complete |
 | UX-02 | Phase 2 | Pending |
 
