@@ -15,9 +15,15 @@ You only need an API key for **one** provider.
 ## Setup
 
 ```bash
-# Clone and install
+# Clone the repo
 git clone <repo-url>
 cd stock-image-gen
+
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 
 # Configure API key(s)
